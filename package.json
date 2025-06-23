@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "A lightweight, low overhead errors-as-values API",
   "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/safe-std/error.git"
+  },
   "license": "MIT",
   "type": "module",
   "main": "./index.js",

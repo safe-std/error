@@ -2,7 +2,7 @@ A lightweight, low overhead errors-as-values API.
 
 Features:
 - Error type safety.
-- No wrappers for success path.
+- No wrapping for success path.
 - Minimal runtime cost.
 
 # API
