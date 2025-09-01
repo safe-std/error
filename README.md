@@ -47,7 +47,7 @@ st.error; // st.Err<undefined>
 ## `taggedErr(tag)`
 Create a tagged error constructor with tag `tag`.
 ```ts
-const createHttpErr = st.taggedErr('http');
+const createHttpErr = st.taggedErr('http')<string>;
 const bodyTypeErr = createHttpErr('Invalid body type'); // st.TaggedErr<'http', 'Invalid body type'>
 
 // Restricting payload type

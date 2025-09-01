@@ -75,9 +75,9 @@ export const tag = <const T>(e: TaggedErr<T>): T => e[2];
  * Create a tagged error constructor
  * @param t - The error tag
  */
-export const taggedErr: <const T, E>(
+export const taggedErr: <const T>(
   t: T,
-) => <const P extends E>(payload: P) => TaggedErr<T, P> =
+) => <const P>(payload: P) => TaggedErr<T, P> =
   (t: any) => (p: any) =>
     [_, p, t] as any;
 
