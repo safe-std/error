@@ -14,6 +14,7 @@ import * as st from '@safe-std/error';
 Create a new error.
 ```ts
 const value = st.err('An error occured!'); // st.Err<'An error occured!'>
+value.payload; // 'An error occured'
 ```
 
 ## `st.isErr(value)`
@@ -21,22 +22,12 @@ Check whether `value` is an error.
 ```ts
 const value = Math.random() < 0.5 ? 0 : st.err('Random');
 if (st.isErr(value)) {
-  value; // st.Err<'Random'>
+  value.payload; // 'Random'
 } else {
   value; // 0
 }
 ```
 
-## `st.payload(err)`
-Get the payload of error `err`.
-```ts
-const value = Math.random() < 0.5 ? 0 : st.err('Random');
-if (st.isErr(value)) {
-  const errorPayload = st.payload(value); // 'Random'
-} else {
-  value; // 0
-}
-```
 
 ## `st.error`
 Represents a generic error with no payload.
@@ -44,81 +35,62 @@ Represents a generic error with no payload.
 st.error; // st.Err<undefined>
 ```
 
-## `taggedErr(tag)`
-Create a tagged error constructor with tag `tag`.
-```ts
-const createHttpErr = st.taggedErr('http')<string>;
-const bodyTypeErr = createHttpErr('Invalid body type'); // st.TaggedErr<'http', 'Invalid body type'>
-
-// Restricting payload type
-const createErrorId = st.taggedErr<'id', 0 | 1 | 2>('id');
-const idErr = createErrorId(2); // st.TaggedErr<'id', '2'>
-```
-
-## `tag(err)`
-Get the tag of tagged error `err`.
-```ts
-const createHttpErr = st.taggedErr('http');
-const bodyTypeErr = createHttpErr('Invalid body type'); // st.TaggedErr<'http', 'Invalid body type'>
-
-const tag = st.tag(bodyTypeErr); // 'http'
-```
-
-## `isTagged(err)`
-Check whether error `err` is tagged.
-```ts
-const createHttpErr = st.taggedErr('http');
-const bodyTypeErr = createHttpErr('Invalid body type'); // st.TaggedErr<'http', 'Invalid body type'>
-
-console.log(st.isTagged(bodyTypeErr)); // logs 'true'
-```
-
-## `taggedWith(tag, err)`
-Check whether error `err` is tagged with `tag`.
-```ts
-const createHttpErr = st.taggedErr('http');
-const bodyTypeErr = createHttpErr('Invalid body type'); // st.TaggedErr<'http', 'Invalid body type'>
-
-console.log(st.taggedWith(bodyTypeErr, 'http')); // logs 'true'
-```
-
-## `promiseTry(promise)`
+## `tryPromise(promise)`
 Safely catch errors from `promise`.
 ```ts
 // Safely catch fetch call error
-const response = await st.promiseTry(
+const response = await st.tryPromise(
   fetch('http://example.com')
 );
 if (st.isErr(response)) {
-  response; // st.Err<unknown>
+  response.payload; // unknown
 } else {
   response; // Response
 }
 ```
 
-## `asyncTry(fn)`
+## `tryAsync(fn)`
 Create a new function that wraps async function `fn` errors safely.
 ```ts
 // Safely catch fetch call error
-const safeFetch = st.asyncTry(async (url: string) => fetch(url));
+const safeFetch = st.tryAsync(async (url: string) => fetch(url));
 
 const response = await safeFetch('http://example.com');
 if (st.isErr(response)) {
-  response; // st.Err<unknown>
+  response.payload; // unknown
 } else {
   response; // Response
 }
 ```
 
-## `syncTry(fn)`
+## `trySync(fn)`
 Create a new function that wraps sync function `fn` errors safely.
 ```ts
-const safeDecode = st.syncTry((url: string) => decodeURIComponent(url));
+const safeDecode = st.trySync((url: string) => decodeURIComponent(url));
 
 const result = safeDecode('%FF%G0');
 if (st.isErr(result)) {
-  result; // st.Err<unknown>
+  result.payload; // unknown
 } else {
   result; // string
 }
 ```
+
+## Tagging error
+```ts
+class HttpErr extends st.Err<{
+  status: number,
+  statusText: string
+}> {};
+
+const badReq = new HttpErr({
+  status: 400,
+  statusText: 'Bad request'
+});
+badReq.payload; // { status: 400, statusText: 'Bad request' }
+
+// Error checking
+if (err instanceof HttpErr) {
+  err.payload; // { status: ..., statusText: ... }
+}
+````
