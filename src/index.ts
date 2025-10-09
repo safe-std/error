@@ -5,6 +5,11 @@ export interface Err<P, T> {
 }
 
 /**
+ * Describe any error
+ */
+export type AnyErr = Err<any, any>;
+
+/**
  * Describe an error
  */
 export class Err<const out P = unknown, const in out T = never> {
