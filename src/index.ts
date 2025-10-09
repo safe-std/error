@@ -10,9 +10,19 @@ export interface Err<P, T> {
 export type AnyErr = Err<any, any>;
 
 /**
+ * Infer error type from result error union
+ */
+export type InferErr<T> = Extract<T, AnyErr>;
+
+/**
+ * Infer result type from result error union
+ */
+export type InferResult<T> = Exclude<T, AnyErr>;
+
+/**
  * Describe an error
  */
-export class Err<const out P = unknown, const in out T = never> {
+export class Err<const out P = unknown, const out T = unknown> {
   payload: P;
   constructor(payload: P) {
     this.payload = payload;
