@@ -52,10 +52,7 @@ if (st.isErr(response)) {
 ## `tryAsync(fn)`
 Create a new function that wraps async function `fn` errors safely.
 ```ts
-// Safely catch fetch call error
-const safeFetch = st.tryAsync(async (url: string) => fetch(url));
-
-const response = await safeFetch('http://example.com');
+const response = st.tryAsync(fetch, 'http://example.com');
 if (st.isErr(response)) {
   response.payload; // unknown
 } else {
@@ -66,9 +63,7 @@ if (st.isErr(response)) {
 ## `trySync(fn)`
 Create a new function that wraps sync function `fn` errors safely.
 ```ts
-const safeDecode = st.trySync((url: string) => decodeURIComponent(url));
-
-const result = safeDecode('%FF%G0');
+const result = trySync(decodeURIComponent, '%FF%G0');
 if (st.isErr(result)) {
   result.payload; // unknown
 } else {
@@ -81,7 +76,7 @@ if (st.isErr(result)) {
 class HttpErr extends st.Err<{
   status: number,
   statusText: string
-}> {};
+}, 'httpError'> {};
 
 const badReq = new HttpErr({
   status: 400,

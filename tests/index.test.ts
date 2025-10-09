@@ -4,35 +4,44 @@ import * as st from '@safe-std/error';
 describe('error', () => {
   test('basic', () => {
     const e = st.err('Hi');
-
-    expect(st.payload(e)).toBe('Hi');
-    expect(st.isTagged(e)).toBe(false);
+    expect(st.isErr(e));
+    expect(e.payload).toBe('Hi');
   });
 
   test('tagged', () => {
-    const aErr = st.taggedErr('a');
-    const bErr = st.taggedErr('b');
+    class AErr<const out T> extends st.Err<T, 'a'> { };
+    class BErr<const out T> extends st.Err<T, 'b'> { };
 
     const f = (x: number) =>
       x <= 0
-        ? aErr('Number is smaller than 0')
+        ? new AErr('Number is smaller than 0')
         : x < 1
-          ? bErr('Number is smaller than 1')
+          ? new BErr('Number is smaller than 1')
           : x;
 
-    expect(st.tag(f(0) as st.TaggedErr)).toBe('a');
-    expect(st.tag(f(0.5) as st.TaggedErr)).toBe('b');
+    expect(f(0)).toBeInstanceOf(AErr);
+    expect(f(0.5)).toBeInstanceOf(BErr);
     expect(f(1)).toBe(1);
+
+    expect(st.err('')).not.toBeInstanceOf(AErr);
+    expect(st.err('')).not.toBeInstanceOf(BErr);
   });
 
   describe('try', () => {
     test('sync', () => {
-      const decode = st.syncTry(decodeURIComponent);
-      expect(st.isErr(decode('%FF%G0'))).toBeTrue();
+      expect(
+        st.isErr(
+          st.trySync(decodeURIComponent, '%FF%G0')
+        )
+      ).toBeTrue();
     });
 
     test('async', async () => {
-      expect(st.isErr(await st.promiseTry(fetch('invalidurl')))).toBeTrue();
+      expect(
+        st.isErr(
+          await st.tryPromise(fetch('invalidurl'))
+        )
+      ).toBeTrue();
     });
   });
 });
