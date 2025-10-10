@@ -1,13 +1,7 @@
-declare const _: unique symbol;
-
-export interface Err<P, T> {
-  [_]: T;
-}
-
 /**
  * Describe any error
  */
-export type AnyErr = Err<any, any>;
+export type AnyErr = Err<any>;
 
 /**
  * Infer error type from result error union
@@ -22,7 +16,7 @@ export type InferResult<T> = Exclude<T, AnyErr>;
 /**
  * Describe an error
  */
-export class Err<const out P = unknown, const out T = unknown> {
+export class Err<const out P = unknown> {
   payload: P;
   constructor(payload: P) {
     this.payload = payload;
@@ -32,10 +26,15 @@ export class Err<const out P = unknown, const out T = unknown> {
 // Unique identifier
 declare const _nativeSymbol: unique symbol;
 
+// Use this pattern to avoid NativeErr<T> being assignable to Err<T>
+export interface NativeErr<T> {
+  [_nativeSymbol]: null
+}
+
 /**
  * Describe a thrown error
  */
-export class NativeErr<const out T = unknown> extends Err<T, typeof _nativeSymbol> {};
+export class NativeErr<const out T = unknown> extends Err<T> {};
 
 /**
  * Create an error from the payload

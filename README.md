@@ -73,10 +73,18 @@ if (st.isErr(result)) {
 
 ## Tagging error
 ```ts
+
+declare const httpErrSymbol: unique symbol;
+
+// Prevent HttpErr from being assignable to Err with equivalent payload
+interface HttpErr {
+  [httpErrSymbol]: null;
+}
+
 class HttpErr extends st.Err<{
   status: number,
   statusText: string
-}, 'httpError'> {};
+}> {};
 
 const badReq = new HttpErr({
   status: 400,

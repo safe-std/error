@@ -9,8 +9,8 @@ describe('error', () => {
   });
 
   test('tagged', () => {
-    class AErr<const out T> extends st.Err<T, 'a'> { };
-    class BErr<const out T> extends st.Err<T, 'b'> { };
+    class AErr<const out T> extends st.Err<T> { };
+    class BErr<const out T> extends st.Err<T> { };
 
     const f = (x: number) =>
       x <= 0
